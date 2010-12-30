@@ -219,6 +219,19 @@ class DSA(object):
 
 from base64 import b64encode
 if __name__ == '__main__':
+    import sys
+    try:
+        if sys.argv[1] == "keygen":
+            dsa = DSA(generate = True)
+            sys.stdout.write("======PUBLIC  KEY======\n")
+            sys.stdout.write(b64encode(dsa.get_pubkey()))
+            sys.stdout.write("\n======PRIVATE KEY======\n")
+            sys.stdout.write(b64encode(dsa.get_privkey()))
+            sys.stdout.write("\n=======================\n")
+            sys.stdout.flush()
+            sys.exit()
+    except Exception,e:
+        print e
     print "generating key"
     dsa_orig = DSA(generate=True)
     orig_pubkey = dsa_orig.get_pubkey()
