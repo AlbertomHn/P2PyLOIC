@@ -132,11 +132,12 @@ class DSA(object):
         elif dsaptr == 0: 
             raise ValueError("can't pull DSA keys out of thin air")
         self._dsa = dsaptr
+        self._openssl = openssl # __del__ might be called after the global openssl is removed
     def __del__(self):
         """
         Deconstructor for calling DSA_free
         """
-        openssl.DSA_free(self._dsa)
+        self._openssl.DSA_free(self._dsa)
     def get_pubkey(self):
         """
         Decode the public key from the object
