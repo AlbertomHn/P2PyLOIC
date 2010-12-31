@@ -115,6 +115,7 @@ class DSA(object):
                                     this is raised with more details on the error
         @raise ValueError: if none of the arguments are given, a ValueError is raised
         """
+        self._openssl = openssl # __del__ might be called after the global openssl is removed
         if dsaptr != 0:
             pass
         elif not privkey is None: # load from a private key
@@ -132,12 +133,15 @@ class DSA(object):
         elif dsaptr == 0: 
             raise ValueError("can't pull DSA keys out of thin air")
         self._dsa = dsaptr
-        self._openssl = openssl # __del__ might be called after the global openssl is removed
     def __del__(self):
         """
         Deconstructor for calling DSA_free
         """
-        self._openssl.DSA_free(self._dsa)
+        try:
+            if self._dsa and self._openssl:
+                self._openssl.DSA_free(self._dsa)
+        except (AttributeError, OpenSSLError): # it didn't work for some reason
+            pass
     def get_pubkey(self):
         """
         Decode the public key from the object
